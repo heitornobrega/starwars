@@ -3,8 +3,6 @@ import PlanetsContext from '../context/PlanetsContext';
 
 function Table() {
   const data = useContext(PlanetsContext);
-  //   const headerData = Object.keys(data[0]);
-
   return (
     <table>
       <thead>
