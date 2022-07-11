@@ -1,16 +1,20 @@
-import React from 'react';
+// import React, { useContext, useState } from 'react';
+// import PlanetsContext from '../context/PlanetsContext';
 
-function TextFilter() {
-  return (
-    <div>
-      <input
-        data-testid="name-filter"
-        id="name-filter"
-        type="text"
-        onChange={ textFilter }
-      />
-    </div>
-  );
-}
+// // import useTextFilter from '../hooks/useTextFilter';
 
-export default TextFilter;
+// function TextFilter() {
+//   return (
+//     <div>
+//       <input
+//         name="name"
+//         data-testid="name-filter"
+//         id="name-filter"
+//         type="text"
+//         onChange={ (e) => handleChange(e) }
+//       />
+//     </div>
+//   );
+// }
+
+// export default TextFilter;
