@@ -38,12 +38,9 @@ function Table() {
       setDataState(dataState
         .filter((element) => Number(element[numericFilter.column]) < Number(value)));
       break;
-    case 'igual a':
+    default:
       setDataState(dataState
         .filter((element) => Number(element[numericFilter.column]) === Number(value)));
-      break;
-    default:
-      return setDataState(dataState);
     }
   };
   const dataToFIlter = () => {

@@ -4,6 +4,7 @@ import App from '../App';
 import mockFetch from '../../cypress/mocks/fetch';
 import testData from '../../cypress/mocks/testData';
 import PlanetsProvider from '../context/PlanetsProvider';
+import userEvent from '@testing-library/user-event';
 
 describe('Testa a preseça dos componentes na página', () => {
   test('Testa a presença de uma caixa de input do tipo texto', () => {
@@ -40,7 +41,7 @@ describe('Testa a preseça dos componentes na página', () => {
 
 describe('Testa se ocorre uma requisição a API', () => {
   beforeEach(() => {
-    jest.spyOn(global, 'fetch').mockImplementation(mockFetch)
+    jest.spyOn(global, 'fetch').mockImplementation(mockFetch);
   })
   afterEach(() => {
     jest.clearAllMocks();
@@ -50,4 +51,25 @@ describe('Testa se ocorre uma requisição a API', () => {
     render(<App />);
     expect(fetch).toHaveBeenCalled();
   })
+  test('Testa se todas al linhas são renderizadas', async () => {
+    render(<App />);
+    const filterButton = await screen.findByRole('button', { name: /filtrar/i }, {timeout: 5000})
+    const input = document.getElementsByTagName('tr');
+    expect(input).toHaveLength(11);
+  }, 7000)
+
+  test('Testa se o filtro por nome está funcionando', async () => {
+    render(<App />);
+    const filterButton = await screen.findByRole('button', { name: /filtrar/i }, {timeout: 5000})
+    const tableRows = document.getElementsByTagName('tr');
+    userEvent.click(filterButton);
+    expect(tableRows).toHaveLength(9);
+  })
+  test('Testa o input de texto', async () => {
+    render(<App />);
+    const tableRows = document.getElementsByTagName('tr');
+    const inputText = await screen.findByRole('textbox',{}, {timeout: 5000} );
+    userEvent.type(inputText, "t");
+    expect(tableRows).toHaveLength(4);
+  }) 
 })
