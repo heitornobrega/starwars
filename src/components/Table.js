@@ -8,7 +8,7 @@ function Table() {
   const [comparasion, setCompar] = useState('maior que');
   const [value, setValue] = useState(0);
   const [numericFilter, setNumericFilter] = useState();
-  const [dataState, setDataState] = useState(useContext(PlanetsContext));
+  const [dataState, setDataState] = useState(data);
 
   const filterCallback = (textFilter, planetName, planet) => {
     if (!textFilter) {
@@ -25,22 +25,25 @@ function Table() {
     });
   }, [column, comparasion, value]);
 
+  useEffect(() => {
+    setDataState(data);
+  }, [data]);
   const applyFilter = () => {
     switch (comparasion) {
     case 'maior que':
-      setDataState(data
+      setDataState(dataState
         .filter((element) => Number(element[numericFilter.column]) > Number(value)));
       break;
     case 'menor que':
-      setDataState(data
+      setDataState(dataState
         .filter((element) => Number(element[numericFilter.column]) < Number(value)));
       break;
     case 'igual a':
-      setDataState(data
+      setDataState(dataState
         .filter((element) => Number(element[numericFilter.column]) === Number(value)));
       break;
     default:
-      return setDataState(data);
+      return setDataState(dataState);
     }
   };
   const dataToFIlter = () => {

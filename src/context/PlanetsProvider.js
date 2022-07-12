@@ -19,7 +19,7 @@ function PlanetsProvider({ children }) {
     };
     planetas();
   }, []);
-
+  console.log(planetsList);
   return (
     <PlanetsContext.Provider value={ planetsList }>
       {children}
