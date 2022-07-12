@@ -4,7 +4,7 @@ import PlanetsContext from './PlanetsContext';
 import fetchPlanets from '../services';
 
 function PlanetsProvider({ children }) {
-  const [planetsList, setPlanetsList] = useState();
+  const [planetsList, setPlanetsList] = useState([]);
 
   const filterResidents = (planets) => {
     planets.map((planet) => delete planet.residents);
@@ -14,8 +14,7 @@ function PlanetsProvider({ children }) {
   useEffect(() => {
     const planetas = async () => {
       const { results } = await fetchPlanets();
-
-      const resultsWithoutResidents = filterResidents(results);
+      const resultsWithoutResidents = await filterResidents(results);
       setPlanetsList(resultsWithoutResidents);
     };
     planetas();
