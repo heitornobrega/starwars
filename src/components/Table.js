@@ -9,6 +9,8 @@ function Table() {
   const [value, setValue] = useState(0);
   const [numericFilter, setNumericFilter] = useState();
   const [dataState, setDataState] = useState(data);
+  const [columnFilterOpt, setColumnFilterOpt] = useState(['population',
+    'orbital_period', 'diameter', 'rotation_period', 'surface_water']);
 
   const filterCallback = (textFilter, planetName, planet) => {
     if (!textFilter) {
@@ -16,6 +18,15 @@ function Table() {
     } if (planetName.includes(inputValue)) {
       return planet;
     }
+  };
+  const handleColumn = (e) => {
+    setColumn(e.target.value);
+  };
+  const handleComparasion = (e) => {
+    setCompar(e.target.value);
+  };
+  const handleValue = (e) => {
+    setValue(e.target.value);
   };
   useEffect(() => {
     setNumericFilter({
@@ -28,6 +39,7 @@ function Table() {
   useEffect(() => {
     setDataState(data);
   }, [data]);
+
   const applyFilter = () => {
     switch (comparasion) {
     case 'maior que':
@@ -42,6 +54,8 @@ function Table() {
       setDataState(dataState
         .filter((element) => Number(element[numericFilter.column]) === Number(value)));
     }
+    setColumnFilterOpt(columnFilterOpt.filter((ele) => column !== ele));
+    setColumn(columnFilterOpt[0]);
   };
   const dataToFIlter = () => {
     if (dataState.length !== 0) {
@@ -61,17 +75,13 @@ function Table() {
       <form>
         <select
           data-testid="column-filter"
-          onChange={ (e) => setColumn(e.target.value) }
+          onChange={ handleColumn }
         >
-          <option defaultChecked>population</option>
-          <option>orbital_period</option>
-          <option>diameter</option>
-          <option>rotation_period</option>
-          <option>surface_water</option>
+          {columnFilterOpt.map((opt) => (<option key={ opt }>{ opt }</option>))}
         </select>
         <select
           data-testid="comparison-filter"
-          onChange={ (e) => setCompar(e.target.value) }
+          onChange={ handleComparasion }
         >
           <option defaultChecked>maior que</option>
           <option>menor que</option>
@@ -81,7 +91,7 @@ function Table() {
           defaultValue={ 0 }
           type="number"
           data-testid="value-filter"
-          onChange={ (e) => setValue(e.target.value) }
+          onChange={ handleValue }
         />
         <button
           data-testid="button-filter"
@@ -89,7 +99,6 @@ function Table() {
           onClick={ () => applyFilter() }
         >
           Filtrar
-
         </button>
       </form>
       <table>

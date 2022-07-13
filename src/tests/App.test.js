@@ -71,5 +71,12 @@ describe('Testa se ocorre uma requisição a API', () => {
     const inputText = await screen.findByRole('textbox',{}, {timeout: 5000} );
     userEvent.type(inputText, "t");
     expect(tableRows).toHaveLength(4);
-  }) 
+  })
+  // test('Testa o input do select de colunas', async () => {
+  //   render(<App />);
+  //   const tableRows = document.getElementsByTagName('tr');
+  //   const select = screen.getByTestId('column-filter');
+  //   userEvent.selectOptions(select, 'menor que');
+  //   expect(select).toHaveValue('menor que');
+  // }) 
 })
