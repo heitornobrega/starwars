@@ -5,7 +5,7 @@ import fetchPlanets from '../services';
 
 function PlanetsProvider({ children }) {
   const [planetsList, setPlanetsList] = useState([]);
-
+  const [dataState, setDataState] = useState([]);
   const filterResidents = (planets) => {
     planets.map((planet) => delete planet.residents);
     return planets;
@@ -14,14 +14,15 @@ function PlanetsProvider({ children }) {
   useEffect(() => {
     const planetas = async () => {
       const { results } = await fetchPlanets();
-      const resultsWithoutResidents = await filterResidents(results);
+      const resultsWithoutResidents = filterResidents(results);
       setPlanetsList(resultsWithoutResidents);
+      setDataState(resultsWithoutResidents);
     };
     planetas();
   }, []);
   console.log(planetsList);
   return (
-    <PlanetsContext.Provider value={ planetsList }>
+    <PlanetsContext.Provider value={ { planetsList, dataState, setDataState } }>
       {children}
     </PlanetsContext.Provider>
   );
