@@ -72,11 +72,91 @@ describe('Testa se ocorre uma requisição a API', () => {
     userEvent.type(inputText, "t");
     expect(tableRows).toHaveLength(4);
   })
-  // test('Testa o input do select de colunas', async () => {
-  //   render(<App />);
-  //   const tableRows = document.getElementsByTagName('tr');
-  //   const select = screen.getByTestId('column-filter');
-  //   userEvent.selectOptions(select, 'menor que');
-  //   expect(select).toHaveValue('menor que');
-  // }) 
+  test('Testa o filtro menor que', async () => {
+    render(<App />);
+    let filterBtn = screen.getByRole('button', { name: /filtrar/i });
+    let inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.type(inputNumber, '200000');
+    userEvent.click(filterBtn);
+    const columnInput = await screen.findByRole('combobox', { name: /Column/i }, { timeout: 5000 })
+    const conditionInput = await screen.findByRole('combobox', { name: /Condition/i }, { timeout: 5000 })
+    filterBtn = await screen.findByRole('button', { name: /filtrar/i }, { timeout: 5000 });
+    inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.selectOptions(columnInput, 'diameter')
+    userEvent.selectOptions(conditionInput, 'menor que')
+    userEvent.clear(inputNumber);
+    userEvent.type(inputNumber, '10000');
+    userEvent.click(filterBtn);
+    await waitFor(() => {
+      const tableRows = document.getElementsByTagName('tr');
+      expect(tableRows).toHaveLength(2);
+    }, 15000)
+
+  })
+  test('Testa o filtro maior que', async () => {
+    render(<App />);
+    let filterBtn = screen.getByRole('button', { name: /filtrar/i });
+    let inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.type(inputNumber, '200000');
+    userEvent.click(filterBtn);
+    const columnInput = await screen.findByRole('combobox', { name: /Column/i }, { timeout: 5000 })
+    const conditionInput = await screen.findByRole('combobox', { name: /Condition/i }, { timeout: 5000 })
+    filterBtn = await screen.findByRole('button', { name: /filtrar/i }, { timeout: 5000 });
+    inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.selectOptions(columnInput, 'surface_water')
+    userEvent.selectOptions(conditionInput, 'maior que')
+    userEvent.clear(inputNumber);
+    userEvent.type(inputNumber, '8');
+    userEvent.click(filterBtn);
+    await waitFor(() => {
+      const tableRows = document.getElementsByTagName('tr');
+      expect(tableRows).toHaveLength(4);
+    }, 15000)
+    
+
+  })
+  test('Testa o filtro igual', async () => {
+    render(<App />);
+    let filterBtn = screen.getByRole('button', { name: /filtrar/i });
+    let inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.type(inputNumber, '200000');
+    userEvent.click(filterBtn);
+    const columnInput = await screen.findByRole('combobox', { name: /Column/i }, { timeout: 5000 })
+    const conditionInput = await screen.findByRole('combobox', { name: /Condition/i }, { timeout: 5000 })
+    filterBtn = await screen.findByRole('button', { name: /filtrar/i }, { timeout: 5000 });
+    inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.selectOptions(columnInput, 'surface_water')
+    userEvent.selectOptions(conditionInput, 'igual a')
+    userEvent.clear(inputNumber);
+    userEvent.type(inputNumber, '40');
+    userEvent.click(filterBtn);
+    await waitFor(() => {
+      const tableRows = document.getElementsByTagName('tr');
+      expect(tableRows).toHaveLength(2);
+    }, 15000)
+    
+
+  })  
+
+
+
+
+
+
+  test('testa o botão que limpa todos os filtros', async () => {
+    render(<App />);
+    const clearAllFiltersBtn = screen.getByRole('button', { name: /remover filtros/i });
+    const filterBtn = screen.getByRole('button', { name: /filtrar/i });
+    const inputNumber = screen.getByRole('spinbutton');
+    const columnInput = screen.getByRole('combobox', {name: /Column/i})
+    userEvent.type(inputNumber, '200000');
+    userEvent.click(filterBtn);
+    userEvent.selectOptions(columnInput, 'diameter')
+    userEvent.type(inputNumber, '12500');
+    userEvent.click(clearAllFiltersBtn);
+    await waitFor(() => {
+      const tableRows = document.getElementsByTagName('tr');
+      expect(tableRows).toHaveLength(11);
+    }, 5000)   
+  })
 })

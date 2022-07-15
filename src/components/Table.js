@@ -125,20 +125,28 @@ function Table() {
         onChange={ (e) => setInputValue(e.target.value) }
       />
       <form>
-        <select
-          data-testid="column-filter"
-          onChange={ (e) => setColumn(e.target.value) }
-        >
-          {columnFilterOpt.map((opt) => (<option key={ opt }>{ opt }</option>))}
-        </select>
-        <select
-          data-testid="comparison-filter"
-          onChange={ (e) => setCompar(e.target.value) }
-        >
-          <option defaultChecked>maior que</option>
-          <option>menor que</option>
-          <option>igual a</option>
-        </select>
+        <label htmlFor="columnFilter">
+          Column
+          <select
+            id="columnFilter"
+            data-testid="column-filter"
+            onChange={ (e) => setColumn(e.target.value) }
+          >
+            {columnFilterOpt.map((opt) => (<option key={ opt }>{ opt }</option>))}
+          </select>
+        </label>
+        <label htmlFor="comparisonFilter">
+          Condition
+          <select
+            id="comparisonFilter"
+            data-testid="comparison-filter"
+            onChange={ (e) => setCompar(e.target.value) }
+          >
+            <option defaultChecked>maior que</option>
+            <option>menor que</option>
+            <option>igual a</option>
+          </select>
+        </label>
         <input
           defaultValue={ 0 }
           type="number"
