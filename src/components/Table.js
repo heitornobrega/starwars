@@ -1,20 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
-// import response from '../mocks/response';
 
 function Table() {
   const initaColomuns = ['population',
     'orbital_period', 'diameter', 'rotation_period', 'surface_water'];
-  const data = useContext(PlanetsContext);
   const { planetsList, dataState, setDataState } = useContext(PlanetsContext);
   const [inputValue, setInputValue] = useState();
   const [column, setColumn] = useState('population');
   const [comparasion, setCompar] = useState('maior que');
   const [value, setValue] = useState(0);
-  // const [numericFilter, setNumericFilter] = useState();
-
   const [columnFilterOpt, setColumnFilterOpt] = useState(initaColomuns);
   const [filterByNumericValues, setFilterByNumericValues] = useState([]);
+  const [order, setOrder] = useState({ column: 'population', sort: 'ASC' });
   const filterCallback = (textFilter, planetName, planet) => {
     if (!textFilter) {
       return planet;
@@ -28,21 +25,13 @@ function Table() {
     setFilterByNumericValues([]);
     setColumn(columnFilterOpt[0]);
   };
-  // useEffect(() => {
-  //   setNumericFilter({
-  //     column,
-  //     comparasion,
-  //     value,
-  //   });
-  // }, [column, comparasion, value, filterByNumericValues]);
   useEffect(() => {
-    console.log(dataState);
+    // console.log(dataState);
     let newData = [...planetsList];
-    console.log(newData);
+    // console.log(newData);
     filterByNumericValues.forEach((plan) => {
       switch (plan.comparasion) {
       case 'maior que':
-        console.log('maior que');
         newData = newData
           .filter((element) => Number(element[plan.column]) > Number(plan.value));
         break;
@@ -51,46 +40,15 @@ function Table() {
           .filter((element) => Number(element[plan.column]) < Number(plan.value));
         break;
       default:
-        console.log('igual');
         newData = newData
           .filter((element) => Number(element[plan.column]) === Number(plan.value));
       }
-      // if (dataState.length === 0) {
-      //   console.log(dataState);
-      //   setDataState(planetsList);
-      // }
     });
     setDataState(newData);
   }, [filterByNumericValues]);
-
-  // useEffect(() => {
-  //   setDataState(data);
-  // }, [data]);
-
   const applyFilter = () => {
-    console.log('entrou no apply');
-    // if (!arg) {
-    console.log('entrou no arg');
     setFilterByNumericValues([...filterByNumericValues, { column, comparasion, value }]);
     setColumnFilterOpt(columnFilterOpt.filter((ele) => column !== ele));
-    // }
-    console.log(filterByNumericValues);
-    // switch (plan.comparasion) {
-    // case 'maior que':
-    //   console.log('maior que');
-    //   setDataState(newData
-    //     .filter((element) => Number(element[plan.column]) > Number(plan.value)));
-    //   break;
-    // case 'menor que':
-    //   setDataState(newData
-    //     .filter((element) => Number(element[plan.column]) < Number(plan.value)));
-    //   break;
-    // default:
-    //   console.log('igual');
-    //   setDataState(newData
-    //     .filter((element) => Number(element[plan.column]) === Number(plan.value)));
-    // }
-    // setColumnFilterOpt(columnFilterOpt.filter((ele) => column !== ele));
     setColumn(columnFilterOpt[0]);
   };
   const testFun = (variavel) => {
@@ -98,23 +56,20 @@ function Table() {
       .filter((curr) => curr.column !== variavel.column));
     setColumnFilterOpt([...columnFilterOpt, variavel.column]);
     setColumn(columnFilterOpt[0]);
-    console.log(data);
-    // const newData = data;
-    // dataState(newData);
-    console.log(data);
-    // filterByNumericValues.forEach((plan) => {
-    //   setColumn(plan.column);
-    //   setCompar(plan.comparasion);
-    //   setValue(plan.value);
-    //   // applyFilter(true, newData, plan);
-    // });
   };
-  // const dataToFIlter = () => {
-  //   if (dataState.length !== 0) {
-  //     return dataState;
-  //   }
-  //   return data;
-  // };
+  const sortData = () => {
+    const sortedList = [...planetsList];
+    if (order.sort === 'ASC') {
+      sortedList.sort((a, b) => ((Number(a[order.column]) || Infinity)
+      - (Number(b[order.column]) || Infinity)));
+      setDataState(sortedList);
+    } else {
+      sortedList.sort((a, b) => ((Number(b[order.column]) || 0)
+      - (Number(a[order.column]) || 0)));
+      setDataState(sortedList);
+    }
+  };
+
   return (
     <div>
       <input
@@ -167,19 +122,62 @@ function Table() {
         >
           REMOVER FILTROS
         </button>
+        <form>
+          <label htmlFor="sort">
+            Sort
+            <select
+              data-testid="column-sort"
+              name="sort"
+              id="sort"
+              onChange={ (e) => setOrder({ ...order, column: e.target.value }) }
+            >
+              {initaColomuns.map((opt) => <option key={ opt }>{opt}</option>)}
+            </select>
+          </label>
+          <label htmlFor="upward">
+            <input
+              type="radio"
+              name="radioMenu"
+              id="upward"
+              value="ASC"
+              data-testid="column-sort-input-asc"
+              onChange={ () => setOrder({ ...order, sort: 'ASC' }) }
+            />
+            Upward
+          </label>
+          <label htmlFor="downward">
+            <input
+              type="radio"
+              name="radioMenu"
+              id="downward"
+              value="DESC"
+              data-testid="column-sort-input-desc"
+              onChange={ () => setOrder({ ...order, sort: 'DESC' }) }
+            />
+            Downward
+          </label>
+          <button
+            type="button"
+            onClick={ () => sortData() }
+            data-testid="column-sort-button"
+          >
+            Sort
+          </button>
+        </form>
       </form>
       {filterByNumericValues && (
         filterByNumericValues
           .map((el) => (
-            <span key={ el.name } data-testid="filter">
+            <div key={ el.name } data-testid="filter">
               {`${el.column} ${el.comparasion} ${el.value}`}
               <button
                 type="button"
                 onClick={ () => testFun(el) }
+                data-testid="delte-filter"
               >
                 X
               </button>
-            </span>
+            </div>
           )))}
       <table>
         <thead>
@@ -218,7 +216,7 @@ function Table() {
               url,
             }) => (
               <tr key={ name }>
-                <td>{name}</td>
+                <td data-testid="planet-name">{name}</td>
                 <td>{rotationPeriod}</td>
                 <td>{orbitalPeriod}</td>
                 <td>{diameter}</td>

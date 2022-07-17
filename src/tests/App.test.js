@@ -2,10 +2,11 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import App from '../App';
 import mockFetch from '../../cypress/mocks/fetch';
-import testData from '../../cypress/mocks/testData';
-import PlanetsProvider from '../context/PlanetsProvider';
 import userEvent from '@testing-library/user-event';
+import fetchPlanets from '../services';
+import response from './response';
 
+const SORTED_PLANET = ['Yavin IV', 'Tatooine', 'Bespin', 'Endor', 'Kamino', 'Alderaan', 'Naboo', 'Coruscant', 'Dagobah', 'Hoth']
 describe('Testa a preseça dos componentes na página', () => {
   test('Testa a presença de uma caixa de input do tipo texto', () => {
     render(<App />)
@@ -37,6 +38,11 @@ describe('Testa a preseça dos componentes na página', () => {
     const table = screen.getByRole('table');
     expect(table).toBeInTheDocument();
   })
+  test('Testa se é feita uma chamda para a API pelo component App', async () => {
+    render(<App />);
+    const results =  await fetchPlanets();
+    expect(results).toEqual(response);
+  })
 })
 
 describe('Testa se ocorre uma requisição a API', () => {
@@ -47,7 +53,7 @@ describe('Testa se ocorre uma requisição a API', () => {
     jest.clearAllMocks();
   });
 
-  test('Testa se é feita uma chamda para a API', () => {
+  test('Testa se é feita uma chamda para a API pelo component App', () => {
     render(<App />);
     expect(fetch).toHaveBeenCalled();
   })
@@ -134,15 +140,7 @@ describe('Testa se ocorre uma requisição a API', () => {
       const tableRows = document.getElementsByTagName('tr');
       expect(tableRows).toHaveLength(2);
     }, 15000)
-    
-
   })  
-
-
-
-
-
-
   test('testa o botão que limpa todos os filtros', async () => {
     render(<App />);
     const clearAllFiltersBtn = screen.getByRole('button', { name: /remover filtros/i });
@@ -158,5 +156,58 @@ describe('Testa se ocorre uma requisição a API', () => {
       const tableRows = document.getElementsByTagName('tr');
       expect(tableRows).toHaveLength(11);
     }, 5000)   
+  })
+  test('Testa o filtro igual', async () => {
+    render(<App />);
+    let filterBtn = screen.getByRole('button', { name: /filtrar/i });
+    let inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.type(inputNumber, '200000');
+    userEvent.click(filterBtn);
+    const columnInput = await screen.findByRole('combobox', { name: /Column/i }, { timeout: 5000 })
+    const conditionInput = await screen.findByRole('combobox', { name: /Condition/i }, { timeout: 5000 })
+    filterBtn = await screen.findByRole('button', { name: /filtrar/i }, { timeout: 5000 });
+    inputNumber = await screen.findByRole('spinbutton', {}, { timeout: 5000 });
+    userEvent.selectOptions(columnInput, 'surface_water')
+    userEvent.selectOptions(conditionInput, 'igual a')
+    userEvent.clear(inputNumber);
+    userEvent.type(inputNumber, '40');
+    userEvent.click(filterBtn);
+    await waitFor(() => {
+
+      const tableRows = document.getElementsByTagName('tr');
+      expect(tableRows).toHaveLength(2);
+    }, 15000)
+    const delFilter = await screen.findAllByRole('button', {  name: /x/i}, { timeout: 5000 })
+    expect(delFilter[1]).toBeInTheDocument();
+    userEvent.click(delFilter[1])
+    await waitFor(() => {
+
+      const tableRows = document.getElementsByTagName('tr');
+      expect(tableRows).toHaveLength(7);
+    }, 15000)
+
+  })
+  test('Testa o ordenador ASC', async () => {
+    render(<App />);
+    const columnSort = await screen.findByRole('combobox', { name: /Sort/i }, { timeout: 5000 });
+    const upWard = await screen.findByRole('radio', { name: /upward/i }, { timeout: 5000 });
+    const sort = await screen.findByRole('button', {  name: /sort/i}, {timeout: 5000})
+    userEvent.selectOptions(columnSort, 'population');
+    userEvent.click(upWard);
+    expect(upWard).toBeChecked();
+    userEvent.click(sort);
+    const planetName = await screen.findAllByTestId('planet-name', {}, { timeout: 5000 });
+
+  })
+  test('Testa o ordenador DESC', async () => {
+    render(<App />);
+    const columnSort = await screen.findByRole('combobox', { name: /Sort/i }, { timeout: 5000 });
+    const downward = await screen.findByRole('radio', { name: /downward/i }, { timeout: 5000 });
+    const sort = await screen.findByRole('button', {  name: /sort/i}, {timeout: 5000})
+    userEvent.selectOptions(columnSort, 'population');
+    userEvent.click(downward);
+    expect(downward).toBeChecked();
+    userEvent.click(sort);
+    const planetName = await screen.findAllByTestId('planet-name', {}, { timeout: 5000 });
   })
 })

@@ -10,17 +10,17 @@ function PlanetsProvider({ children }) {
     planets.map((planet) => delete planet.residents);
     return planets;
   };
-
+  const umNeg = -1;
   useEffect(() => {
     const planetas = async () => {
       const { results } = await fetchPlanets();
       const resultsWithoutResidents = filterResidents(results);
       setPlanetsList(resultsWithoutResidents);
-      setDataState(resultsWithoutResidents);
+      setDataState(resultsWithoutResidents.sort((a, b) => (a.name > b.name ? 1 : umNeg)));
     };
     planetas();
   }, []);
-  console.log(planetsList);
+  // console.log(planetsList);
   return (
     <PlanetsContext.Provider value={ { planetsList, dataState, setDataState } }>
       {children}
